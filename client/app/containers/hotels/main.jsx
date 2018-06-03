@@ -14,6 +14,11 @@ const sortByValues = [
   'UserRating',
 ];
 
+const handlersMap = {
+  filter: 'handleFilterByChange',
+  sort: 'handleSortByChange',
+};
+
 class HotelsContainer extends React.Component {
   constructor(props) {
     super(props);
@@ -40,15 +45,17 @@ class HotelsContainer extends React.Component {
   // Events
   // =============================================
   handleFilterByChange(event) {
-    const { filters } = this.props;
+    const { filters, sort } = this.props.params;
+
     const { attributes, value } = event.target;
     const key = attributes.name.value;
 
     const params = {
-      filterBy: {
-        ...filters.filterBy,
+      filters: {
+        ...filters,
         [key]: value,
       },
+      sort,
     };
 
     if (value === '' || typeof value === 'undefined') {
@@ -59,12 +66,11 @@ class HotelsContainer extends React.Component {
   }
 
   handleSortByChange(event) {
-    const { filters } = this.props;
+    const { filters } = this.props.params;
+
     const params = {
-      filterBy: {
-        ...filters.filterBy,
-      },
-      sortBy: event.target.value,
+      filters,
+      sort: event.target.value,
     };
 
     this.props.actions.fetchData(params);
@@ -73,19 +79,16 @@ class HotelsContainer extends React.Component {
   handleUserInteration(event, type) {
     event.persist();
 
-    const callbacks = {
-      filterBy: this.handleFilterByChange,
-      sortBy: this.handleSortByChange,
-    };
+    const handler = this[handlersMap[type]];
 
-    if (!callbacks[type]) {
+    if (typeof handler !== 'function') {
       return;
     }
 
     window.clearTimeout(this.userInteractionTimeout);
 
     this.userInteractionTimeout = window.setTimeout(() => {
-      callbacks[type](event);
+      handler(event);
     }, 500);
   }
 
@@ -99,7 +102,7 @@ class HotelsContainer extends React.Component {
         <div className={styles['hotels-header']}>
           <p>Stars</p>
           <select
-            onChange={event => this.handleUserInteration(event, 'filterBy')}
+            onChange={event => this.handleUserInteration(event, 'filter')}
             name='Stars'
           >
             {[...Array(5)].map((item, index) =>
@@ -113,7 +116,7 @@ class HotelsContainer extends React.Component {
         <div className={styles['hotels-header']}>
           <p>userRatings</p>
           <select
-            onChange={event => this.handleUserInteration(event, 'filterBy')}
+            onChange={event => this.handleUserInteration(event, 'filter')}
             name='UserRating'
           >
             {[...Array(10)].map((item, index) =>
@@ -127,7 +130,7 @@ class HotelsContainer extends React.Component {
         <div className={styles['hotels-header']}>
           <p>MinCost</p>
           <select
-            onChange={event => this.handleUserInteration(event, 'filterBy')}
+            onChange={event => this.handleUserInteration(event, 'filter')}
             name='MinCost'
           >
             {[...Array(50)].map((item, index) =>
@@ -143,18 +146,18 @@ class HotelsContainer extends React.Component {
           <input
             type='text'
             name='Name'
-            onChange={event => this.handleUserInteration(event, 'filterBy')}
+            onChange={event => this.handleUserInteration(event, 'filter')}
           />
         </div>
 
         <div className={styles['hotels-header']}>
           <p>Sort</p>
           <select
-            onChange={event => this.handleUserInteration(event, 'sortBy')}
+            onChange={event => this.handleUserInteration(event, 'sort')}
             name='Sort'
           >
             {sortByValues.map((item, index) =>
-              <option key={index} value={(index + 1) * 200}>
+              <option key={index} value={item}>
                 {item}
               </option>
             )}
@@ -191,7 +194,10 @@ const mapDispatchToProps = dispatch => ({
 
 HotelsContainer.propTypes = {
   data: PropTypes.arrayOf(PropTypes.shape({})),
-  filters: PropTypes.shape({}),
+  params: PropTypes.shape({
+    filters: PropTypes.object,
+    sort: PropTypes.string,
+  }),
   actions: PropTypes.shape({
     fetchData: PropTypes.func,
     sortBy: PropTypes.func,

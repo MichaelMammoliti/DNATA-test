@@ -1,14 +1,19 @@
 import hotelResponse from '../../../__mocks__/hotels.json';
-
 import HotelUtilities from '../../../utilities/hotel';
 
-const fetchData = filters => {
+const fetchData = params => {
   const promiseFn = resolve => {
-    // Emilate response
+    // Simulate server response with random delay
     window.setTimeout(() => {
-      const newItems = HotelUtilities.filterCollection(hotelResponse.Establishments, filters);
+      let newCollection = hotelResponse.Establishments;
 
-      resolve(newItems);
+      if (params.sort) {
+        newCollection = HotelUtilities.sortByKey(newCollection, params.sort);
+      }
+
+      const response = HotelUtilities.filter(newCollection, params.filters, params.limit);
+
+      resolve(response);
     }, parseInt(Math.random() * 1000, 10));
   };
 

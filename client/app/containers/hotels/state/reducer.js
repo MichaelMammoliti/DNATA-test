@@ -1,8 +1,8 @@
 import CONSTANTS from './constants';
 
 const initialState = {
+  params: {},
   data: undefined,
-  selectedFilter: undefined,
   fetchDataRequestStatus: undefined,
 };
 
