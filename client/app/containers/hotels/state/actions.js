@@ -9,9 +9,11 @@ const fetchDataSuccess = data => ({
   },
 });
 
-const fetchDataPending = () => ({
+const fetchDataPending = (filters = {}) => ({
   type: CONSTANTS.FETCH_DATA_PENDING,
   payload: {
+    filters,
+    data: [],
     fetchDataRequestStatus: 'pending',
   },
 });
@@ -20,12 +22,11 @@ const fetchDataFail = () => ({
   type: CONSTANTS.FETCH_DATA_FAIL,
   payload: {
     fetchDataRequestStatus: 'fail',
-    data: [],
   },
 });
 
 const fetchData = filters => dispatch => {
-  dispatch(fetchDataPending());
+  dispatch(fetchDataPending(filters));
 
   const success = (data) => {
     dispatch(fetchDataSuccess(data));

@@ -1,21 +1,15 @@
 import hotelResponse from '../../../__mocks__/hotels.json';
 
+import HotelUtilities from '../../../utilities/hotel';
+
 const fetchData = filters => {
-  const { amount, page } = filters;
-  // let's say that there are 20 items (amount) per "page"
-
   const promiseFn = resolve => {
+    // Emilate response
     window.setTimeout(() => {
-      const newItems = [];
-      const fromNum = page * amount;
-      const untilNum = fromNum + amount;
-
-      for (let i = fromNum; i < untilNum; i += 1) {
-        newItems.push(hotelResponse.Establishments[i]);
-      }
+      const newItems = HotelUtilities.filterCollection(hotelResponse.Establishments, filters);
 
       resolve(newItems);
-    }, 1000);
+    }, parseInt(Math.random() * 1000, 10));
   };
 
   return new Promise(promiseFn);

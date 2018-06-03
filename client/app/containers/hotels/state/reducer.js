@@ -2,6 +2,7 @@ import CONSTANTS from './constants';
 
 const initialState = {
   data: undefined,
+  selectedFilter: undefined,
   fetchDataRequestStatus: undefined,
 };
 

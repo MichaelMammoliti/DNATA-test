@@ -1,27 +1,59 @@
 import styles from './main.scss';
 
-const HotelListItem = (props) => {
-  return (
-    <div className={styles['hotels-list-item']}>
-      <p>{props.Distance}</p>
-      <p>{props.EstablishmentId}</p>
-      <p>{props.EstablishmentType}</p>
-      <p>{props.ImageUrl}</p>
-      <p>{props.Location}</p>
-      <p>{props.MinCost}</p>
-      <p>{props.Name}</p>
-      <p>{props.Stars}</p>
-      <p>{props.ThumbnailUrl}</p>
-      <p>{props.UserRating}</p>
-      <p>{props.UserRatingCount}</p>
-      <p>{props.UserRatingTitle}</p>
+// <p>{props.EstablishmentId}</p>
+
+const HotelListItem = ({
+  Name,
+  Distance,
+  EstablishmentType,
+  ImageUrl,
+  ThumbnailUrl,
+  Location,
+  MinCost,
+  Stars,
+  UserRating,
+  UserRatingCount,
+  UserRatingTitle,
+}) => (
+  <div className={styles['hotels-list-item']}>
+
+    <div className={styles['hotels-list-item--title']}>
+      <span>Name: {Name}</span>
     </div>
-  );
-};
+
+    <div className={styles['hotels-list-item--distance']}>
+      <span>Distance: {Distance}</span>
+    </div>
+
+    <div className={styles['hotels-list-item--type']}>
+      <span>EstablishmentType: {EstablishmentType}</span>
+    </div>
+
+
+    <div className={styles['hotels-list-item--images']}>
+      <img src={ImageUrl} alt='' />
+      <img src={ThumbnailUrl} alt='' />
+    </div>
+
+    <div className={styles['hotels-list-item--location']}>
+      <span>Location: {Location}</span>
+    </div>
+    <div className={styles['hotels-list-item--cost']}>
+      <span>MinCost: {MinCost}</span>
+    </div>
+
+    <div className={styles['hotels-list-item--rating']}>
+      <span>Stars: {Stars}</span><br/>
+      <span>UserRating: {UserRating}</span><br/>
+      <span>UserRatingCount: {UserRatingCount}</span><br/>
+      <span>UserRatingTitle: {UserRatingTitle}</span><br/>
+    </div>
+  </div>
+);
 
 HotelListItem.propTypes = {
   Distance: PropTypes.number,
-  EstablishmentId: PropTypes.number,
+  // EstablishmentId: PropTypes.number,
   EstablishmentType: PropTypes.string,
   ImageUrl: PropTypes.string,
   Location: PropTypes.string,
