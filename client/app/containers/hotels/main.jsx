@@ -4,30 +4,17 @@ import { bindActionCreators } from 'redux';
 import HotelsActions from './state/actions';
 
 import HotelsList from '../../components/hotels-list';
+import HotelsFilters from '../../components/hotels-filters';
 
 import styles from './main.scss';
-
-const sortByValues = [
-  'Distance',
-  'Stars',
-  'MinCost',
-  'UserRating',
-];
-
-const handlersMap = {
-  filter: 'handleFilterByChange',
-  sort: 'handleSortByChange',
-};
 
 class HotelsContainer extends React.Component {
   constructor(props) {
     super(props);
 
-    this.userInteractionTimeout = undefined;
+    this.timeout = undefined;
 
-    this.handleFilterByChange = this.handleFilterByChange.bind(this);
-    this.handleSortByChange = this.handleSortByChange.bind(this);
-    this.handleUserInteration = this.handleUserInteration.bind(this);
+    this.handleUserInteraction = this.handleUserInteraction.bind(this);
   }
 
   // Lifecycle
@@ -44,51 +31,47 @@ class HotelsContainer extends React.Component {
 
   // Events
   // =============================================
-  handleFilterByChange(event) {
+  getFilterParameters(selectedItem) {
     const { filters, sort } = this.props.params;
-
-    const { attributes, value } = event.target;
-    const key = attributes.name.value;
+    const { value, inputName } = selectedItem;
 
     const params = {
       filters: {
         ...filters,
-        [key]: value,
+        [inputName]: value,
       },
       sort,
     };
 
     if (value === '' || typeof value === 'undefined') {
-      delete params.filterBy[key];
+      delete params.filters[inputName];
     }
 
-    this.props.actions.fetchData(params);
+    return params;
   }
 
-  handleSortByChange(event) {
+  getSortParameters(selectedItem) {
     const { filters } = this.props.params;
 
-    const params = {
+    return {
       filters,
-      sort: event.target.value,
+      sort: selectedItem.value,
     };
-
-    this.props.actions.fetchData(params);
   }
 
-  handleUserInteration(event, type) {
-    event.persist();
+  handleUserInteraction(selectedItem) {
+    window.clearTimeout(this.timeout);
 
-    const handler = this[handlersMap[type]];
+    this.timeout = window.setTimeout(() => {
+      let params;
 
-    if (typeof handler !== 'function') {
-      return;
-    }
+      if (selectedItem.inputName === 'Sort') {
+        params = this.getSortParameters(selectedItem);
+      } else {
+        params = this.getFilterParameters(selectedItem);
+      }
 
-    window.clearTimeout(this.userInteractionTimeout);
-
-    this.userInteractionTimeout = window.setTimeout(() => {
-      handler(event);
+      this.props.actions.fetchData(params);
     }, 500);
   }
 
@@ -99,70 +82,8 @@ class HotelsContainer extends React.Component {
 
     return (
       <div className={styles['hotels-container']}>
-        <div className={styles['hotels-header']}>
-          <p>Stars</p>
-          <select
-            onChange={event => this.handleUserInteration(event, 'filter')}
-            name='Stars'
-          >
-            {[...Array(5)].map((item, index) =>
-              <option key={index} value={(index + 1)}>
-                {(index + 1)}
-              </option>
-            )}
-          </select>
-        </div>
 
-        <div className={styles['hotels-header']}>
-          <p>userRatings</p>
-          <select
-            onChange={event => this.handleUserInteration(event, 'filter')}
-            name='UserRating'
-          >
-            {[...Array(10)].map((item, index) =>
-              <option key={index} value={(index + 1)}>
-                {(index + 1)}
-              </option>
-            )}
-          </select>
-        </div>
-
-        <div className={styles['hotels-header']}>
-          <p>MinCost</p>
-          <select
-            onChange={event => this.handleUserInteration(event, 'filter')}
-            name='MinCost'
-          >
-            {[...Array(50)].map((item, index) =>
-              <option key={index} value={(index + 1) * 200}>
-                {(index + 1) * 200}
-              </option>
-            )}
-          </select>
-        </div>
-
-        <div className={styles['hotels-header']}>
-          <p>Name</p>
-          <input
-            type='text'
-            name='Name'
-            onChange={event => this.handleUserInteration(event, 'filter')}
-          />
-        </div>
-
-        <div className={styles['hotels-header']}>
-          <p>Sort</p>
-          <select
-            onChange={event => this.handleUserInteration(event, 'sort')}
-            name='Sort'
-          >
-            {sortByValues.map((item, index) =>
-              <option key={index} value={item}>
-                {item}
-              </option>
-            )}
-          </select>
-        </div>
+        <HotelsFilters onInputChange={this.handleUserInteraction} />
 
         {fetchDataRequestStatus === 'pending' &&
           <div className={styles['hotels-container--pending']}>
@@ -170,9 +91,15 @@ class HotelsContainer extends React.Component {
           </div>
         }
 
-        {fetchDataRequestStatus === 'success' &&
+        {fetchDataRequestStatus === 'success' && !!data.length &&
           <div className={styles['hotels-container--success']}>
             <HotelsList data={data} />
+          </div>
+        }
+
+        {fetchDataRequestStatus === 'success' && !data.length &&
+          <div className={styles['hotels-container--success-no-data']}>
+            <span>no data available, try changing filters</span>
           </div>
         }
 
@@ -181,6 +108,17 @@ class HotelsContainer extends React.Component {
             <span>Unable to fetch hotels.</span>
           </div>
         }
+
+        {
+          /*
+            we could render a pagination and create a request based on this
+            OR
+            we display a CTA with an onClick event which shows more result (manual interaction)
+            OR
+            on scroll, we load more data (automatic, similar to facebook)
+         */
+        }
+
       </div>
     );
   }

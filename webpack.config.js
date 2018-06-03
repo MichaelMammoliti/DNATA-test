@@ -41,7 +41,7 @@ module.exports = {
             loader: 'sass-loader',
             options: {
               includePaths: [
-                'app/styles',
+                'client/app/styles',
               ],
             },
           },

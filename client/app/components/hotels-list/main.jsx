@@ -10,7 +10,10 @@ const HotelsList = ({ data }) => {
   return (
     <div className={styles['hotels-list']}>
       {data.map((dataItem, index) => (
-        <div className={styles['hotels-list--item']} key={index}>
+        <div
+          className={styles['hotels-list--item']}
+          key={index}
+        >
           <HotelsListItem {...dataItem} />
         </div>
       ))}

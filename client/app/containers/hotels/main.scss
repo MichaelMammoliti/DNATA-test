@@ -1,0 +1,10 @@
+.hotels-container {
+  display: block;
+
+  &--pending,
+  &--success,
+  &--success-no-data,
+  &--fail {
+    display: block;
+  }
+}

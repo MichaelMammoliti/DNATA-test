@@ -1,15 +1,27 @@
+@import 'styleguide';
+
 .hotels-list {
-  display: block;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
   padding: 20px;
 
-  >* {
-    &:not(:last-of-type) {
-      margin-bottom: 20px;
-    }
-  }
-
   &--item {
+    flex-shrink: 1;
+    flex-grow: 0;
+    flex-basis: 100%;
     padding: 20px;
-    border: 1px solid #ddd;
+  }
+}
+
+@include viewport(tablet) {
+  .hotels-list--item {
+    flex-basis: 50%;
+  }
+}
+
+@include viewport(desktop) {
+  .hotels-list--item {
+    flex-basis: 20%;
   }
 }
